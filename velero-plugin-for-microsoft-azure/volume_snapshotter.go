@@ -47,6 +47,7 @@ const (
 	vslConfigKeyActiveDirectoryAuthorityURI = "activeDirectoryAuthorityURI"
 	vslConfigKeySubscriptionID              = "subscriptionId"
 	vslConfigKeyResourceGroup               = "resourceGroup"
+	vslConfigKeyLocation                    = "location"
 	vslConfigKeyAPITimeout                  = "apiTimeout"
 	vslConfigKeyIncremental                 = "incremental"
 	vslConfigKeyTags                        = "tags"
@@ -69,6 +70,7 @@ type VolumeSnapshotter struct {
 	snapsIncremental   *bool
 	apiTimeout         time.Duration
 	snapsTags          map[string]string
+	location           *string
 }
 
 type snapshotIdentifier struct {
@@ -136,6 +138,10 @@ func (b *VolumeSnapshotter) Init(config map[string]string) error {
 		}
 	}
 
+	if val := config[vslConfigKeyLocation]; val != "" {
+        b.location = stringPtr(val)
+    }
+
 	clientOptions, err := azure.GetClientOptions(config, creds)
 	if err != nil {
 		return err
@@ -179,7 +185,7 @@ func (b *VolumeSnapshotter) CreateVolumeFromSnapshot(snapshotID, volumeType, vol
 
 	disk := armcompute.Disk{
 		Name:     &diskName,
-		Location: snapshotInfo.Location,
+		Location: diskLocation,
 		Properties: &armcompute.DiskProperties{
 			CreationData: &armcompute.CreationData{
 				CreateOption:     to.Ptr(armcompute.DiskCreateOptionCopy),

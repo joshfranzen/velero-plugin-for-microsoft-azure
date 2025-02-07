@@ -32,6 +32,12 @@ spec:
     # Optional.
     subscriptionId: alt-subscription
 
+    # The name of the region to where volume snapshots will be stored.
+    # If not specified, will default to the PVC snapshot current location.
+    #
+    # Optional.
+    location: region
+
     # URI of the AAD endpoint of the volume snapshots account.
     #
     # Note that the fully qualified AAD URI with http(s):// scheme is required to authenticate
